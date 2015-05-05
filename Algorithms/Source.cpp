@@ -1,14 +1,15 @@
+
 #include <vector>
 #include <iostream>
 #include <string>
-#include <fstream> 
+#include <fstream>
+#include <limits>
+#include <queue>
+
 
 using namespace std;
-
 class Vertex;
 class Edge;
-
-
 class Edge
 {
 public:
@@ -18,7 +19,6 @@ public:
 		destination = dest;
 		distance = dist;
 	}
-
 	Vertex* getOrigin() { return origin; }
 	Vertex* getDestination() { return destination; }
 	int getDistance() { return distance; }
@@ -27,8 +27,6 @@ private:
 	Vertex* destination;
 	int distance;
 };
-
-
 class Vertex
 {
 public:
@@ -37,16 +35,14 @@ public:
 	{
 		name = id;
 		color = false;
-		min_dist = 0;
+		distance = 0;
 		parent = nullptr;
 	}
-
 	void addEdge(Vertex *v, int dist)
 	{
 		Edge newEdge(this, v, dist);
 		edges.push_back(newEdge);
 	}
-
 	void printEdges()
 	{
 		cout << name << ":" << endl;
@@ -58,38 +54,33 @@ public:
 		}
 		cout << endl;
 	}
-
 	string getName() { return name; }
-	int getMin_dist() { return min_dist; }
 	Vertex* getParent() { return parent; }
-	void setMin_dist(int n) { min_dist = n; }
 	void setParent(Vertex*v){ parent = v; }
+	int getDistance(){ return distance; }
+	void setDistance(int dist){ distance = dist; }
 	vector<Edge> getEdges() { return edges; }
-
 private:
 	string name;
+	int distance;
 	vector<Edge> edges;
-	int min_dist;
 	Vertex*parent;
-
 public:
-	bool color;
+	bool color; //rdy - not rdy
 };
-
-class Graph	
+class Graph
 {
 public:
+	int infinite = std::numeric_limits<int>::max();
 	vector<Vertex> vertices;
 	int numberOfVertices;
 	string start_vertex_name;
-	string destini_vertex_name;
-
+	Vertex* start_Vertex;
 	vector<string> split(string str, string delim)
 	{
 		unsigned start = 0;
 		unsigned end;
 		vector<string> v;
-
 		while ((end = str.find(delim, start)) != string::npos)
 		{
 			v.push_back(str.substr(start, end - start));
@@ -98,10 +89,8 @@ public:
 		v.push_back(str.substr(start));
 		return v;
 	}
-
 	int read(string s)
 	{
-
 		vector<string> splitLine;
 		string sLine = "";
 		string name;
@@ -117,8 +106,6 @@ public:
 		case 3: path = "test3.txt";
 			break;
 		}
-
-
 		infile.open(path.c_str());
 		if (!infile.is_open()) return -1;
 		while (!infile.eof())
@@ -131,12 +118,10 @@ public:
 					numberOfVertices = stoi(sLine);
 				}
 				catch (exception){}
-
 			}
 			else if (line == 2)
 			{
 				splitLine = split(sLine, " "); // here it is
-
 				for (int i = 0; i<numberOfVertices; i++)
 				{
 					vertices.push_back(Vertex(splitLine[i]));
@@ -145,7 +130,6 @@ public:
 			else if (line>2 && line <= (2 + numberOfVertices))
 			{
 				splitLine = split(sLine, " ");
-
 				for (int i = 0; i<numberOfVertices; i++)
 				{
 					int temp = stoi(splitLine[i]);
@@ -157,31 +141,71 @@ public:
 			}
 			else if (line == numberOfVertices + 3)
 			{
-				start_vertex_name = sLine;
-			}
-			else
-			{
-				destini_vertex_name = sLine;
+				//start_vertex_name = sLine;
+				start_Vertex = findVertex(sLine);
 			}
 			line++;
 		}
 		infile.close();
 		return 0;
 	}
-
-	int findVertex(string name)
+	Vertex* findVertex(string name)
 	{
-		int number = 0;
-		for (int i = 0; i<numberOfVertices; i++)
+		Vertex* v = nullptr;
+		bool finished = false;
+		for (int i = 0; i<numberOfVertices && !finished; i++)
 		{
 			if (vertices[i].getName() == name)
 			{
-				number = i;
+				v = &vertices[i];
+				finished = true;
 			}
 		}
-		return number;
+		return v;
 	}
 };
+
+vector<string> breathFirstTraversal(Graph &graph)
+{
+	vector<string> result;
+	for (int i = 0; i < graph.numberOfVertices; ++i)
+	{
+		graph.vertices[i].color = false;
+		graph.vertices[i].setDistance(graph.infinite);
+		graph.vertices[i].setParent(nullptr);
+	}
+	graph.start_Vertex->color = true;
+	graph.start_Vertex->setDistance(0);
+
+	queue<Vertex*> queueBFT;
+	queueBFT.push(graph.start_Vertex);
+
+	while (!queueBFT.empty())
+	{
+		Vertex* u = queueBFT.front();
+		queueBFT.pop();
+		result.push_back(u->getName());
+
+		for (Edge& neigthborEdge : u->getEdges())
+		{
+			Vertex* neigthborVertex = neigthborEdge.getDestination();
+			if (neigthborVertex->color == false)
+			{
+				neigthborVertex->color = true;
+				neigthborVertex->setDistance(u->getDistance() + 1);
+				neigthborVertex->setParent(u);
+				queueBFT.push(neigthborVertex);
+			}
+		}
+	}
+	return result;
+}
+
+
+
+
+
+
 
 int main()
 {
@@ -207,16 +231,21 @@ int main()
 	cout << endl;
 	cout << "-----------------------------------------------------------------" << endl;
 	cout << endl;
-
 	Graph g;
-	int ret=g.read(mystring);
-	if (ret == 0) cout << "A fájl megnyitása sikertelen" << endl;
+	int ret = g.read(mystring);
+	if (ret != 0) cout << "A fájl megnyitása sikertelen" << endl;
+	vector<string> result = breathFirstTraversal(g);
+	for (auto element : result)
+	{
+		cout << element << " ";
+	}
+
+
 
 	cout << endl;
 	cout << "-----------------------------------------------------------------" << endl;
 	cout << endl;
-
 	system("PAUSE");
-
 	return 0;
 }
+
