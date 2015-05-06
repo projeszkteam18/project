@@ -163,6 +163,18 @@ public:
 		}
 		return v;
 	}
+	int findVertexIndex(string name)
+	{
+		int number = 0;
+		for (int i = 0; i<numberOfVertices; i++)
+		{
+			if (vertices[i].getName() == name)
+			{
+				number = i;
+			}
+		}
+		return number;
+	}
 };
 
 vector<string> breathFirstTraversal(Graph &graph)
