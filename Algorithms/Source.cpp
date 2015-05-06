@@ -246,11 +246,6 @@ int main()
 	Graph g;
 	int ret = g.read(mystring);
 	if (ret != 0) cout << "A fájl megnyitása sikertelen" << endl;
-	vector<string> result = breathFirstTraversal(g);
-	for (auto element : result)
-	{
-		cout << element << " ";
-	}
 
 
 
