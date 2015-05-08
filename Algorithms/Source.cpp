@@ -295,6 +295,7 @@ vector<vector<int> > bellman_ford(Graph &graph){
 	return result;
 }
 
+
 int main()
 {
 	cout << "Melyik tesztet szerete futtatni?" << endl;
