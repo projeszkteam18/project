@@ -4,6 +4,7 @@
 #include <fstream> 
 #include <limits>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 
@@ -197,7 +198,6 @@ vector<string> breathFirstTraversal(Graph &graph)
 		Vertex* u = queueBFT.front();
 		queueBFT.pop();
 		result.push_back(u->getName());
-
 		for (Edge& neigthborEdge : u->getEdges())
 		{
 			Vertex* neigthborVertex = neigthborEdge.getDestination();
@@ -210,6 +210,9 @@ vector<string> breathFirstTraversal(Graph &graph)
 			}
 		}
 	}
+	cout << "Szelessegi bejaras: ";
+	copy(result.begin(), result.end(), ostream_iterator<string>(cout, " "));
+	cout << "\n";
 	return result;
 }
 
@@ -325,8 +328,10 @@ int main()
 	int ret = g.read(mystring);
 	if (ret != 0) cout << "A fájl megnyitása sikertelen" << endl;
 
+
 	vector<vector<int> > result = dijkstra(g);
 	vector<vector<int> > result2 = bellman_ford(g);
+	vector<string> resultBFT = breathFirstTraversal(g);
 
 	cout << endl;
 	cout << "-----------------------------------------------------------------" << endl;
