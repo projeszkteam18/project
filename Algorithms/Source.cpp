@@ -4,179 +4,13 @@
 #include <fstream> 
 #include <limits>
 #include <queue>
+#include "Graph.h"
+#include "Edge.h"
 #include <algorithm>
 
 using namespace std;
 
-using namespace std;
-class Vertex;
-class Edge;
-class Edge
-{
-public:
-	Edge(Vertex *org, Vertex *dest, int dist)
-	{
-		origin = org;
-		destination = dest;
-		distance = dist;
-	}
-	Vertex* getOrigin() { return origin; }
-	Vertex* getDestination() { return destination; }
-	int getDistance() { return distance; }
-private:
-	Vertex* origin;
-	Vertex* destination;
-	int distance;
-};
-class Vertex
-{
-public:
-	Vertex() {}
-	Vertex(string id)
-	{
-		name = id;
-		color = false;
-		distance = 0;
-		parent = nullptr;
-	}
-	void addEdge(Vertex *v, int dist)
-	{
-		Edge newEdge(this, v, dist);
-		edges.push_back(newEdge);
-	}
-	void printEdges()
-	{
-		cout << name << ":" << endl;
-		for (int i = 0; i < edges.size(); i++)
-		{
-			Edge e = edges[i];
-			cout << e.getDestination()->getName() <<
-				" - " << e.getDistance() << endl;
-		}
-		cout << endl;
-	}
-	string getName() { return name; }
-	Vertex* getParent() { return parent; }
-	void setParent(Vertex*v){ parent = v; }
-	int getDistance(){ return distance; }
-	void setDistance(int dist){ distance = dist; }
-	vector<Edge> getEdges() { return edges; }
-private:
-	string name;
-	int distance;
-	vector<Edge> edges;
-	Vertex*parent;
-public:
-	bool color; //rdy - not rdy
-};
-class Graph	
-{
-public:
-	int infinite = std::numeric_limits<int>::max();
-	vector<Vertex> vertices;
-	int numberOfVertices;
-	string start_vertex_name;
-	Vertex* start_Vertex;
-	vector<string> split(string str, string delim)
-	{
-		unsigned start = 0;
-		unsigned end;
-		vector<string> v;
-		while ((end = str.find(delim, start)) != string::npos)
-		{
-			v.push_back(str.substr(start, end - start));
-			start = end + delim.length();
-		}
-		v.push_back(str.substr(start));
-		return v;
-	}
-	int read(string s)
-	{
-		vector<string> splitLine;
-		string sLine = "";
-		string name;
-		ifstream infile;
-		int line = 1;
-		string path;
-		switch (stoi(s))
-		{
-		case 1: path = "test1.txt";
-			break;
-		case 2: path = "test2.txt";
-			break;
-		case 3: path = "test3.txt";
-			break;
-		}
-		infile.open(path.c_str());
-		if (!infile.is_open()) return -1;
-		while (!infile.eof())
-		{
-			getline(infile, sLine);
-			if (line == 1)
-			{
-				try
-				{
-					numberOfVertices = stoi(sLine);
-				}
-				catch (exception){}
-			}
-			else if (line == 2)
-			{
-				splitLine = split(sLine, " "); // here it is
-				for (int i = 0; i<numberOfVertices; i++)
-				{
-					vertices.push_back(Vertex(splitLine[i]));
-				}
-			}
-			else if (line>2 && line <= (2 + numberOfVertices))
-			{
-				splitLine = split(sLine, " ");
-				for (int i = 0; i<numberOfVertices; i++)
-				{
-					int temp = stoi(splitLine[i]);
-					if (temp>0)
-					{
-						vertices[line - 3].addEdge(&vertices[i], temp);
-					}
-				}
-			}
-			else if (line == numberOfVertices + 3)
-			{
-				//start_vertex_name = sLine;
-				start_Vertex = findVertex(sLine);
-			}
-			line++;
-		}
-		infile.close();
-		return 0;
-	}
-	Vertex* findVertex(string name)
-	{
-		Vertex* v = nullptr;
-		bool finished = false;
-		for (int i = 0; i<numberOfVertices && !finished; i++)
-		{
-			if (vertices[i].getName() == name)
-			{
-				v = &vertices[i];
-				finished = true;
-			}
-		}
-		return v;
-	}
-	int findVertexIndex(string name)
-	{
-		int number = 0;
-		for (int i = 0; i<numberOfVertices; i++)
-		{
-			if (vertices[i].getName() == name)
-			{
-				number = i;
-			}
-		}
-		return number;
-	}
-};
+
 
 vector<string> breathFirstTraversal(Graph &graph)
 {
@@ -198,6 +32,7 @@ vector<string> breathFirstTraversal(Graph &graph)
 		Vertex* u = queueBFT.front();
 		queueBFT.pop();
 		result.push_back(u->getName());
+
 		for (Edge& neigthborEdge : u->getEdges())
 		{
 			Vertex* neigthborVertex = neigthborEdge.getDestination();
@@ -215,14 +50,6 @@ vector<string> breathFirstTraversal(Graph &graph)
 	cout << "\n";
 	return result;
 }
-
-
-
-
-
-
-
-
 
 vector<vector<int> > dijkstra(Graph &graph){
 
@@ -328,15 +155,11 @@ int main()
 	int ret = g.read(mystring);
 	if (ret != 0) cout << "A fájl megnyitása sikertelen" << endl;
 
-
 	vector<vector<int> > result = dijkstra(g);
 	vector<vector<int> > result2 = bellman_ford(g);
-	vector<string> resultBFT = breathFirstTraversal(g);
-
 	cout << endl;
 	cout << "-----------------------------------------------------------------" << endl;
 	cout << endl;
 	system("PAUSE");
 	return 0;
 }
-
