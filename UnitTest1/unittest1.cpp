@@ -21,6 +21,7 @@ namespace UnitTest1
 		TEST_METHOD(TestMethod2)
 		{
 			/*string fileName = "./TestFiles/test0.txt";
+
 			Graph g;
 			int ret = g.read(fileName);
 			Assert::AreEqual(ret, -1);*/
