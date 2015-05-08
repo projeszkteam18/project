@@ -1,11 +1,11 @@
-
 #include <vector>
 #include <iostream>
 #include <string>
-#include <fstream>
+#include <fstream> 
 #include <limits>
 #include <queue>
 
+using namespace std;
 
 using namespace std;
 class Vertex;
@@ -68,7 +68,7 @@ private:
 public:
 	bool color; //rdy - not rdy
 };
-class Graph
+class Graph	
 {
 public:
 	int infinite = std::numeric_limits<int>::max();
@@ -219,6 +219,49 @@ vector<string> breathFirstTraversal(Graph &graph)
 
 
 
+
+
+vector<vector<int> > dijkstra(Graph &graph){
+
+	vector<int> d;
+	vector<int> p;
+	int infinity = std::numeric_limits<int>::max();
+	for (int i = 0; i < graph.numberOfVertices; i++){
+		d.push_back(infinity);
+		p.push_back(-1);
+	}
+
+	int start_point = graph.findVertexIndex(graph.start_Vertex->getName());
+	d[start_point] = 0;
+
+
+	for (int i = 0; i < graph.numberOfVertices; i++){
+		int min = infinity;
+		int min_place = 0;
+		for (int i = 0; i < d.size(); i++){
+			if (d[i] < min && graph.vertices[i].color == false){
+				min = d[i];
+				min_place = i;
+			}
+		}
+		Vertex vertex = graph.vertices[min_place];
+
+		for (int j = 0; j < vertex.getEdges().size(); j++){
+
+			if (d[graph.findVertexIndex(vertex.getEdges()[j].getDestination()->getName())] > d[min_place] + vertex.getEdges()[j].getDistance()){
+				d[graph.findVertexIndex(vertex.getEdges()[j].getDestination()->getName())] = d[min_place] + vertex.getEdges()[j].getDistance();
+				p[graph.findVertexIndex(vertex.getEdges()[j].getDestination()->getName())] = min_place;
+			}
+		}
+		graph.vertices[min_place].color = true;
+	}
+
+	vector<vector<int> > result;
+	result.push_back(d);
+	result.push_back(p);
+	return result;
+}
+
 int main()
 {
 	cout << "Melyik tesztet szerete futtatni?" << endl;
@@ -243,11 +286,12 @@ int main()
 	cout << endl;
 	cout << "-----------------------------------------------------------------" << endl;
 	cout << endl;
+
 	Graph g;
 	int ret = g.read(mystring);
 	if (ret != 0) cout << "A fájl megnyitása sikertelen" << endl;
 
-
+	vector<vector<int> > result = dijkstra(g);
 
 	cout << endl;
 	cout << "-----------------------------------------------------------------" << endl;
