@@ -133,5 +133,31 @@ namespace UnitTest1
 
 			Assert::AreEqual(ok, true);
 		}
+
+		TEST_METHOD(TestMethodSearchValidGraph)
+		{
+
+			Graph g;
+
+			string filename = std::string(TEST_CASE_DIRECTORY) + "test1.txt";
+			int ret = g.read(filename);
+			vector<string> result = breathFirstTraversal(g);
+			vector<string> expected = { "A", "B", "C", "D" };
+
+
+			bool ok = true;
+
+			for (int i = 0; i < expected.size() && ok; ++i){
+
+				if (expected[i] != result[i]){
+					ok = false;
+				}
+			}
+
+
+			Assert::AreEqual(ok, true);
+
+
+		}
 	};
 }
