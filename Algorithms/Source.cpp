@@ -12,35 +12,6 @@
 using namespace std;
 
 
-vector<vector<int> > bellman_ford(Graph &graph){
-	vector<int> d;
-	vector<int> p;
-
-
-	int infinity = std::numeric_limits<int>::max();
-	for (int i = 0; i < graph.numberOfVertices; i++){
-		d.push_back(infinity);
-		p.push_back(-1);
-	}
-
-	int start_point = graph.findVertexIndex(graph.start_Vertex->getName());
-	d[start_point] = 0;
-	bool okke = false;
-	for (int i = 0; i < graph.numberOfVertices - 1 && !okke; i++){
-		for (int j = 0; j < graph.numberOfVertices; j++){
-			Vertex vertex = graph.vertices[j];
-			int index = (j + graph.findVertexIndex(graph.start_Vertex->getName())) % graph.numberOfVertices;
-			for (int k = 0; k < vertex.getEdges().size(); k++){
-				if (d[graph.findVertexIndex(vertex.getEdges()[k].getDestination()->getName())] > d[index] + vertex.getEdges()[k].getDistance()
-					&& d[index] != infinity){
-					d[graph.findVertexIndex(vertex.getEdges()[k].getDestination()->getName())] = d[index] + vertex.getEdges()[k].getDistance();
-					p[graph.findVertexIndex(vertex.getEdges()[k].getDestination()->getName())] = index;
-				}
-			}
-		}
-	}
-
-
 
 int main()
 {
