@@ -37,6 +37,20 @@ namespace UnitTest1
 			Assert::AreEqual(ret, 0);
 		}
 
+		TEST_METHOD(TestMethodReadTwo)
+		{
+			Graph g;
+			string filename = std::string(TEST_CASE_DIRECTORY) + "test2.txt";
+			int ret = g.read(filename);
+			Assert::AreEqual(ret, 0);
+		}
 
+		TEST_METHOD(TestMethodReadThree)
+		{
+			Graph g;
+			string filename = std::string(TEST_CASE_DIRECTORY) + "test3.txt";
+			int ret = g.read(filename);
+			Assert::AreEqual(ret, 0);
+		}
 	};
 }
