@@ -93,5 +93,45 @@ namespace UnitTest1
 			Assert::AreEqual(ok, true);
 
 		}
+
+		TEST_METHOD(TestMethodBellmanValidGraph)
+		{
+			Graph g;
+			string filename = std::string(TEST_CASE_DIRECTORY) + "test1.txt";
+			int ret = g.read(filename);
+
+			vector<vector<int> > result = bellman_ford(g);
+
+			vector<int> d;
+			d.push_back(0);
+			d.push_back(700);
+			d.push_back(400);
+			d.push_back(800);
+			d.push_back(2147483647);
+
+			vector<int> p;
+			p.push_back(-1);
+			p.push_back(0);
+			p.push_back(0);
+			p.push_back(2);
+			p.push_back(-1);
+
+			vector<vector<int> > expected;
+			expected.push_back(d);
+			expected.push_back(p);
+
+			bool ok = true;
+
+			for (int i = 0; i < expected.size() && ok; ++i){
+				for (int j = 0; j < expected[i].size() && ok; ++j){
+					if (expected[i][j] != result[i][j]){
+						ok = false;
+					}
+				}
+			}
+
+
+			Assert::AreEqual(ok, true);
+		}
 	};
 }
