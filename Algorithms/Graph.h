@@ -7,10 +7,10 @@ class Vertex;
 #include "Vertex.h"
 #include <fstream> 
 #include <string>
+#include <stdio.h> 
 
 using namespace std;
 
-using namespace std;
 
 class Graph
 {
@@ -34,25 +34,15 @@ public:
 		return v;
 	}
 
-	int read(string s)
+	int read(string path)
 	{
 		vector<string> splitLine;
 		string sLine = "";
 		string name;
 		ifstream infile;
 		int line = 1;
-		string path;
-		switch (stoi(s))
-		{
-		case 1: path = "test1.txt";
-			break;
-		case 2: path = "test2.txt";
-			break;
-		case 3: path = "test3.txt";
-			break;
-		default: "";
-			break;
-		}
+
+
 		infile.open(path.c_str());
 		if (!infile.is_open()) return -1;
 		while (!infile.eof())
